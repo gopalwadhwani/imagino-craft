@@ -1,8 +1,13 @@
 import { assets } from '../assets/assets'
+import { motion } from "motion/react"
 
 const Footer = () => {
     return (
-        <div className='flex items-center justify-between gap-4 py-3 mt-20'>
+        <motion.div className='flex items-center justify-between gap-4 py-3 mt-20'
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+            viewport={{ once: true }}>
 
             <img src={assets.logo} alt="" width={150} />
 
@@ -16,7 +21,7 @@ const Footer = () => {
                 <img src={assets.instagram_icon} alt="" width={35} />
             </div>
 
-        </div>
+        </motion.div>
     )
 }
 
