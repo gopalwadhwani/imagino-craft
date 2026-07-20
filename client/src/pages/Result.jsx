@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { assets } from '../assets/assets'
+import { AppContext } from '../context/AppContext'
 
 const Result = () => {
 
@@ -8,8 +9,25 @@ const Result = () => {
   const [loading, setLoading] = useState(false)
   const [input, setInput] = useState('')
 
+  const { generateImage } = useContext(AppContext)
+
   const onSubmitHandler = async (e) => {
     e.preventDefault()
+
+    if (!input) return
+
+    setLoading(true)
+    setIsImageLoaded(false)
+
+    try {
+      const generatedImage = await generateImage(input)
+      if (generatedImage) {
+        setIsImageLoaded(true)
+        setImage(generatedImage)
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
