@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify"; // remove if you're not using react-toastify
 
 export const AppContext = createContext();
 
@@ -28,6 +29,31 @@ const AppContextProvider = (props) => {
     }
   };
 
+  const generateImage = async (prompt) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/image/generate",
+        { prompt },
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        loadCreditsData(); // refresh credit balance after successful generation
+        return data.resultImage;
+      } else {
+        toast.error(data.message);
+        loadCreditsData(); // refresh in case it was a credit issue
+
+        if (data.creditBalance === 0) {
+          navigate("/buy"); // redirect to buy-credits page if out of credits
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem("token");
     setToken("");
@@ -52,6 +78,7 @@ const AppContextProvider = (props) => {
     setCredit,
     loadCreditsData,
     logout,
+    generateImage,
     navigate,
   };
 
