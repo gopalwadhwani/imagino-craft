@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify"; // remove if you're not using react-toastify
+import { toast } from "react-toastify";
 
 export const AppContext = createContext();
 
@@ -38,15 +38,74 @@ const AppContextProvider = (props) => {
       );
 
       if (data.success) {
-        loadCreditsData(); // refresh credit balance after successful generation
+        loadCreditsData();
         return data.resultImage;
       } else {
         toast.error(data.message);
-        loadCreditsData(); // refresh in case it was a credit issue
+        loadCreditsData();
 
         if (data.creditBalance === 0) {
-          navigate("/buy"); // redirect to buy-credits page if out of credits
+          navigate("/buy");
         }
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
+  const initPay = async (order) => {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: "Credits Payment",
+      description: "Credits Payment",
+      order_id: order.id,
+      receipt: order.receipt,
+      handler: async (response) => {
+        try {
+          const { data } = await axios.post(
+            backendUrl + "/api/user/verify-razorpay",
+            response,
+            { headers: { token } }
+          );
+
+          if (data.success) {
+            loadCreditsData();
+            navigate("/");
+            toast.success("Credits Added");
+          } else {
+            toast.error(data.message);
+          }
+        } catch (error) {
+          console.log(error);
+          toast.error(error.message);
+        }
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
+
+  const paymentRazorpay = async (planId) => {
+    try {
+      if (!user) {
+        setShowLogin(true);
+        return;
+      }
+
+      const { data } = await axios.post(
+        backendUrl + "/api/user/pay-razorpay",
+        { planId },
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        initPay(data.order);
+      } else {
+        toast.error(data.message);
       }
     } catch (error) {
       console.log(error);
@@ -79,6 +138,7 @@ const AppContextProvider = (props) => {
     loadCreditsData,
     logout,
     generateImage,
+    paymentRazorpay,
     navigate,
   };
 
