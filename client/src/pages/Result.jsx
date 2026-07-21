@@ -14,7 +14,7 @@ const Result = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault()
 
-    if (!input) return
+    if (!input || loading) return
 
     setLoading(true)
     setIsImageLoaded(false)
@@ -50,18 +50,21 @@ const Result = () => {
             className='flex-1 min-w-0 bg-transparent outline-none ml-8 max-sm:w-20 placeholder-color' />
 
           <button type='submit'
-            className='bg-zinc-900 px-10 sm:px-16 py-3 rounded-full'
-          >Generate</button>
+            disabled={loading}
+            className={`bg-zinc-900 px-10 sm:px-16 py-3 rounded-full ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {loading ? 'Generating...' : 'Generate'}
+          </button>
         </div>
       }
 
       {isImageLoaded &&
-  <div className='flex gap-2 flex-wrap justify-center text-white text-sm p-0.5 mt-10 rounded-full'>
-    <p onClick={() => { setIsImageLoaded(false); setInput('') }}
-      className='bg-transparent border border-zinc-900 text-black px-8 py-3 rounded-full cursor-pointer'>Generate Another</p>
-    <a href={image} download className='bg-zinc-900 px-10 py-3 rounded-full cursor-pointer'>Download</a>
-  </div>
-}
+        <div className='flex gap-2 flex-wrap justify-center text-white text-sm p-0.5 mt-10 rounded-full'>
+          <p onClick={() => { setIsImageLoaded(false); setInput('') }}
+            className='bg-transparent border border-zinc-900 text-black px-8 py-3 rounded-full cursor-pointer'>Generate Another</p>
+          <a href={image} download className='bg-zinc-900 px-10 py-3 rounded-full cursor-pointer'>Download</a>
+        </div>
+      }
 
     </form>
   )
