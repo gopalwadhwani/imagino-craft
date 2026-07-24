@@ -12,6 +12,7 @@ const AppContextProvider = (props) => {
   const [credit, setCredit] = useState(false);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+  console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY_ID)
   const navigate = useNavigate();
 
   const loadCreditsData = async () => {
