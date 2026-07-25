@@ -4,7 +4,7 @@ import { assets } from '../assets/assets'
 
 const History = () => {
 
-  const { getUserImages, deleteImage } = useContext(AppContext)
+  const { getUserImages, deleteImage, navigate } = useContext(AppContext)
   const [images, setImages] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedIndex, setSelectedIndex] = useState(null)
@@ -63,7 +63,16 @@ const History = () => {
   const selectedImage = selectedIndex !== null ? images[selectedIndex] : null
 
   return (
-    <div className='min-h-[80vh] pt-14 mb-10'>
+    <div className='relative min-h-[80vh] pt-14 mb-10'>
+
+      <button
+  type='button'
+  onClick={() => navigate(-1)}
+  className='absolute top-4 left-4 sm:top-6 sm:left-6 text-gray-600 hover:text-black bg-white/60 hover:bg-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors'
+>
+  ←
+</button>
+
       <h1 className='text-center text-3xl font-medium mb-10'>Your Generated Images</h1>
 
       {loading && <p className='text-center text-gray-500'>Loading...</p>}
@@ -82,11 +91,11 @@ const History = () => {
             className='w-full sm:w-56 cursor-pointer group relative'>
             <img src={item.imageUrl} alt={item.prompt} className='rounded-lg w-full h-56 object-cover' />
             <button
-  onClick={(e) => handleDelete(e, item._id)}
-  className='absolute top-2 right-2 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-sm'
->
-  🗑
-</button>
+              onClick={(e) => handleDelete(e, item._id)}
+              className='absolute top-2 right-2 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-sm'
+            >
+              🗑
+            </button>
             <p className='text-sm text-gray-600 mt-2 line-clamp-2'>{item.prompt}</p>
           </div>
         ))}
@@ -98,29 +107,30 @@ const History = () => {
           className='fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4'
         >
           <button
-  onClick={() => setSelectedIndex(null)}
-  className='absolute top-4 left-4 sm:top-6 sm:left-6 bg-white/10 hover:bg-white/20 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors'
->
-  ←
-</button>
+            onClick={() => setSelectedIndex(null)}
+            className='absolute top-4 left-4 sm:top-6 sm:left-6 bg-white/10 hover:bg-white/20 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors'
+          >
+            ←
+          </button>
 
           {images.length > 1 &&
-  <button
-    onClick={showPrev}
-    className='absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors'
-  >
-    ‹
-  </button>
-}
+            <button
+              onClick={showPrev}
+              className='absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors'
+            >
+              ‹
+            </button>
+          }
 
-{images.length > 1 &&
-  <button
-    onClick={showNext}
-    className='absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors'
-  >
-    ›
-  </button>
-}
+          {images.length > 1 &&
+            <button
+              onClick={showNext}
+              className='absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors'
+            >
+              ›
+            </button>
+          }
+
           <div onClick={(e) => e.stopPropagation()} className='max-w-lg w-full bg-white rounded-lg overflow-hidden max-h-[85vh] flex flex-col'>
             <img src={selectedImage.imageUrl} alt={selectedImage.prompt} className='w-full max-h-[55vh] object-contain bg-black shrink-0' />
             <div className='p-4 overflow-y-auto'>
