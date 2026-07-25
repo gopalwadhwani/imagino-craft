@@ -22,6 +22,8 @@ const Navbar = () => {
         user ?
           <div className='flex items-center gap-2 sm:gap-3'>
 
+            <p onClick={() => navigate('/history')} className='cursor-pointer text-gray-600 hover:text-black transition-all max-sm:hidden'>History</p>
+
             <button onClick={() => navigate('/buy')} className='flex items-center gap-2 bg-blue-100 px-4 sm:px-6 py-1.5 sm:py-3 rounded-full hover:scale-105 transition-all duration-700'>
               <img className='w-5' src={assets.credit_star} alt="" />
               <p className='text-xs sm:text-sm font-medium text-gray-600'>Credits left : {credit}</p>
@@ -34,6 +36,7 @@ const Navbar = () => {
 
               <div className='absolute hidden group-hover:block top-0 right-0 z-10 text-black rounded pt-12'>
                 <ul className='list-none m-0 p-2 bg-white rounded-md border text-sm'>
+                  <li onClick={() => navigate('/history')} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>History</li>
                   <li onClick={logout} className='py-1 px-2 cursor-pointer pr-10'>Logout</li>
                 </ul>
               </div>
