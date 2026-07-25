@@ -54,47 +54,50 @@ const Login = () => {
     }, [])
 
     return (
-        <div className='fixed top-0 left-0 right-0 bottom-0 z-10 backdrop-blur-sm bg-black/30 flex justify-center items-center'>
+        <div className='fixed top-0 left-0 right-0 bottom-0 z-10 backdrop-blur-sm bg-black/30 flex justify-center items-center px-4 sm:px-6'>
 
-            <form onSubmit={onSubmitHandler} className='relative bg-white p-10 rounded-xl text-slate-500'>
+            <form
+                onSubmit={onSubmitHandler}
+                className='relative bg-white p-6 sm:p-8 md:p-10 rounded-xl text-slate-500 w-full max-w-[420px]'
+            >
 
-                <h1 className='text-center text-2xl text-neutral-700 font-medium'>{state}</h1>
+                <h1 className='text-center text-xl sm:text-2xl text-neutral-700 font-medium'>{state}</h1>
 
-                <p className='text-sm'>Welcome back! Please sign in to continue</p>
+                <p className='text-sm text-center'>Welcome back! Please sign in to continue</p>
 
                 {state !== 'Login' &&
-                    <div className='border px-6 py-2 flex items-center gap-2 rounded-full mt-5'>
-                        <img src={assets.user_icon} alt="" />
+                    <div className='border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full mt-5 w-full'>
+                        <img src={assets.user_icon} alt="" className='w-4 sm:w-5' />
                         <input
                             onChange={(e) => setName(e.target.value)}
                             value={name}
                             type="text"
-                            className='outline-none text-sm'
+                            className='outline-none text-sm w-full min-w-0'
                             placeholder='Full Name'
                             required
                         />
                     </div>
                 }
 
-                <div className='border px-6 py-2 flex items-center gap-2 rounded-full mt-4'>
-                    <img src={assets.email_icon} alt="" />
+                <div className='border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full mt-4 w-full'>
+                    <img src={assets.email_icon} alt="" className='w-4 sm:w-5' />
                     <input
                         onChange={(e) => setEmail(e.target.value)}
                         value={email}
                         type="email"
-                        className='outline-none text-sm'
+                        className='outline-none text-sm w-full min-w-0'
                         placeholder='Email id'
                         required
                     />
                 </div>
 
-                <div className='border px-6 py-2 flex items-center gap-2 rounded-full mt-4'>
-                    <img src={assets.lock_icon} alt="" />
+                <div className='border px-4 sm:px-6 py-2 flex items-center gap-2 rounded-full mt-4 w-full'>
+                    <img src={assets.lock_icon} alt="" className='w-4 sm:w-5' />
                     <input
                         onChange={(e) => setPassword(e.target.value)}
                         value={password}
                         type="password"
-                        className='outline-none text-sm'
+                        className='outline-none text-sm w-full min-w-0'
                         placeholder='Password'
                         required
                     />
@@ -102,12 +105,15 @@ const Login = () => {
 
                 <p className='text-sm text-blue-600 my-4 cursor-pointer'>Forgot password?</p>
 
-                <button type='submit' className='bg-blue-600 w-full text-white py-2 rounded-full'>
+                <button
+                    type='submit'
+                    className='bg-blue-600 w-full text-white py-2 rounded-full'
+                >
                     {state === 'Login' ? 'login' : 'create account'}
                 </button>
 
                 {state === 'Login'
-                    ? <p className='mt-5 text-center'>
+                    ? <p className='mt-5 text-center text-sm'>
                         Don't have an account?
                         <span
                             className='text-blue-600 cursor-pointer'
@@ -116,7 +122,7 @@ const Login = () => {
                             {' '}Sign up
                         </span>
                     </p>
-                    : <p className='mt-5 text-center'>
+                    : <p className='mt-5 text-center text-sm'>
                         Already have an account?
                         <span
                             className='text-blue-600 cursor-pointer'
@@ -131,7 +137,7 @@ const Login = () => {
                     onClick={() => setShowLogin(false)}
                     src={assets.cross_icon}
                     alt=""
-                    className='absolute top-5 right-5 cursor-pointer'
+                    className='absolute top-4 right-4 sm:top-5 sm:right-5 cursor-pointer w-4 sm:w-5'
                 />
 
             </form>

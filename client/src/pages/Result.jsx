@@ -31,10 +31,10 @@ const Result = () => {
   }
 
   return (
-    <form onSubmit={onSubmitHandler} className='flex flex-col min-h-[90vh] justify-center items-center'>
-      <div>
+    <form onSubmit={onSubmitHandler} className='flex flex-col min-h-[90vh] justify-center items-center px-4'>
+      <div className='w-full max-w-sm mx-auto'>
         <div className='relative'>
-          <img src={image} alt="" className='max-w-sm rounded' />
+          <img src={image} alt="" className='w-full max-w-sm rounded' />
           <span className={`absolute bottom-0 left-0 h-1 bg-blue-500 ${loading ? 'w-full transition-all duration-[10s]' : 'w-0'
             }`} />
         </div>
@@ -47,11 +47,11 @@ const Result = () => {
           <input
             onChange={e => setInput(e.target.value)} value={input}
             type="text" placeholder='Describe what you want to generate'
-            className='flex-1 min-w-0 bg-transparent outline-none ml-8 max-sm:w-20 placeholder-color' />
+            className='flex-1 min-w-0 bg-transparent outline-none ml-4 sm:ml-8 placeholder-color' />
 
           <button type='submit'
             disabled={loading}
-            className={`bg-zinc-900 px-10 sm:px-16 py-3 rounded-full ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`bg-zinc-900 px-6 sm:px-16 py-3 rounded-full whitespace-nowrap ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {loading ? 'Generating...' : 'Generate'}
           </button>

@@ -105,23 +105,22 @@ const History = () => {
 </button>
 
           {images.length > 1 &&
-            <button
-              onClick={showPrev}
-              className='absolute left-2 sm:left-6 bg-white/10 hover:bg-white/20 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors'
-            >
-              ‹
-            </button>
-          }
+  <button
+    onClick={showPrev}
+    className='absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors'
+  >
+    ‹
+  </button>
+}
 
-          {images.length > 1 &&
-            <button
-              onClick={showNext}
-              className='absolute right-2 sm:right-6 bg-white/10 hover:bg-white/20 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors'
-            >
-              ›
-            </button>
-          }
-
+{images.length > 1 &&
+  <button
+    onClick={showNext}
+    className='absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors'
+  >
+    ›
+  </button>
+}
           <div onClick={(e) => e.stopPropagation()} className='max-w-lg w-full bg-white rounded-lg overflow-hidden max-h-[85vh] flex flex-col'>
             <img src={selectedImage.imageUrl} alt={selectedImage.prompt} className='w-full max-h-[55vh] object-contain bg-black shrink-0' />
             <div className='p-4 overflow-y-auto'>

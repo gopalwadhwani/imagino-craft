@@ -14,8 +14,8 @@ const Navbar = () => {
   return (
     <div className='flex items-center justify-between py-4 px-4'>
       <Link to='/' className="flex items-center gap-1">
-        <img src={favicon} alt="" className='w-18 sm:w-12 lg:w-18' />
-        <h1 className='text-blue-700 text-3xl font-bold'>ImaginoCraft</h1>
+        <img src={favicon} alt="" className='w-10 sm:w-12 lg:w-16' />
+        <h1 className='text-blue-700 text-xl sm:text-2xl lg:text-3xl font-bold'>ImaginoCraft</h1>
       </Link>
 
       {
@@ -24,9 +24,9 @@ const Navbar = () => {
 
             <p onClick={() => navigate('/history')} className='cursor-pointer text-gray-600 hover:text-black transition-all max-sm:hidden'>History</p>
 
-            <button onClick={() => navigate('/buy')} className='flex items-center gap-2 bg-blue-100 px-4 sm:px-6 py-1.5 sm:py-3 rounded-full hover:scale-105 transition-all duration-700'>
-              <img className='w-5' src={assets.credit_star} alt="" />
-              <p className='text-xs sm:text-sm font-medium text-gray-600'>Credits left : {credit}</p>
+            <button onClick={() => navigate('/buy')} className='flex items-center gap-1 sm:gap-2 bg-blue-100 px-2.5 sm:px-6 py-1.5 sm:py-3 rounded-full hover:scale-105 transition-all duration-700'>
+              <img className='w-4 sm:w-5' src={assets.credit_star} alt="" />
+              <p className='text-xs sm:text-sm font-medium text-gray-600'>Credits: {credit}</p>
             </button>
 
             <p className='text-gray-600 max-sm:hidden pl-4'>Hi, {user.name}</p>

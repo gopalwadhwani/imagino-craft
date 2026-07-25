@@ -15,13 +15,13 @@ const Header = () => {
     }
   }
   return (
-    <motion.div className='flex flex-col justify-center items-center text-center my-20'
+    <motion.div className='flex flex-col justify-center items-center text-center my-10 sm:my-20'
       initial={{ opacity: 0.2, y: 100 }}
       transition={{ duration: 1 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}>
 
-      <motion.div className='text-stone-500 inline-flex text-center gap-2 bg-white px-6 py-1 rounded-full border border-neutral-500'
+      <motion.div className='text-stone-500 inline-flex items-center text-center gap-2 bg-white px-4 sm:px-6 py-1 rounded-full border border-neutral-500 whitespace-nowrap text-xs sm:text-sm'
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.8 }}>
@@ -37,7 +37,7 @@ const Header = () => {
         >image</motion.span>, in seconds.
       </motion.h1>
 
-      <motion.p className='text-center max-w-xl mx-auto mt-5'
+      <motion.p className='text-center max-w-xl mx-auto mt-5 px-4 sm:px-0'
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.8 }}
@@ -47,7 +47,7 @@ const Header = () => {
 
       <motion.button
         onClick={onClickHandler}
-        className='sm:text-lg text-white bg-black w-auto mt-8 px-12 py-2.5 flex items-center gap-2 rounded-full'
+        className='sm:text-lg text-white bg-black w-auto mt-8 px-8 sm:px-12 py-2.5 flex items-center gap-2 rounded-full'
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         initial={{ opacity: 0 }}
@@ -63,7 +63,7 @@ const Header = () => {
         <img className="h-6" src={assets.star_group} alt="" />
       </motion.button>
 
-      <motion.div className='flex flex-wrap justify-center mt-16 gap-3'
+      <motion.div className='flex flex-wrap justify-center mt-16 gap-3 px-4'
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
@@ -71,11 +71,10 @@ const Header = () => {
         {Array(6).fill('').map((item, index) => (
           <motion.img
             whileHover={{ scale: 1.05, duration: 0.1 }}
-            className='rounded hover:scale-105 transition-all duration-300 cursor-pointer max-sm:w-10'
+            className='rounded hover:scale-105 transition-all duration-300 cursor-pointer w-10 sm:w-16 md:w-[70px]'
             src={index % 2 === 0 ? assets.sample_img_2 : assets.sample_img_1}
             alt=""
             key={index}
-            width={70}
           />
         ))}
       </motion.div>
