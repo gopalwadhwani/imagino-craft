@@ -9,7 +9,7 @@ const Result = () => {
   const [loading, setLoading] = useState(false)
   const [input, setInput] = useState('')
 
-  const { generateImage } = useContext(AppContext)
+  const { generateImage, navigate } = useContext(AppContext)
 
   const onSubmitHandler = async (e) => {
     e.preventDefault()
@@ -31,7 +31,16 @@ const Result = () => {
   }
 
   return (
-    <form onSubmit={onSubmitHandler} className='flex flex-col min-h-[90vh] justify-center items-center px-4'>
+    <form onSubmit={onSubmitHandler} className='relative flex flex-col min-h-[90vh] justify-center items-center px-4'>
+
+      <button
+        type='button'
+        onClick={() => navigate('/')}
+        className='absolute top-4 left-4 sm:top-6 sm:left-6 text-gray-600 hover:text-black bg-white/60 hover:bg-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors'
+      >
+        ←
+      </button>
+
       <div className='w-full max-w-sm mx-auto'>
         <div className='relative'>
           <img src={image} alt="" className='w-full max-w-sm rounded' />

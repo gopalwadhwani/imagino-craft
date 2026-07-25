@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { assets } from '../assets/assets'
 import favicon from "../assets/favicon.svg";
 import { Link, useNavigate } from 'react-router-dom'
@@ -8,6 +8,7 @@ import { AppContext } from '../context/AppContext'
 const Navbar = () => {
 
   const { user, setShowLogin, logout, credit } = useContext(AppContext);
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const navigate = useNavigate()
 
@@ -31,15 +32,25 @@ const Navbar = () => {
 
             <p className='text-gray-600 max-sm:hidden pl-4'>Hi, {user.name}</p>
 
-            <div className='relative group'>
-              <img src={assets.profile_icon} className='w-10 drop-shadow' alt="" />
+            <div className='relative'>
+              <img
+                src={assets.profile_icon}
+                className='w-10 drop-shadow cursor-pointer'
+                alt=""
+                onClick={() => setMenuOpen(prev => !prev)}
+              />
 
-              <div className='absolute hidden group-hover:block top-0 right-0 z-10 text-black rounded pt-12'>
-                <ul className='list-none m-0 p-2 bg-white rounded-md border text-sm'>
-                  <li onClick={() => navigate('/history')} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>History</li>
-                  <li onClick={logout} className='py-1 px-2 cursor-pointer pr-10'>Logout</li>
-                </ul>
-              </div>
+              {menuOpen &&
+                <>
+                  <div className='fixed inset-0 z-0' onClick={() => setMenuOpen(false)} />
+                  <div className='absolute top-0 right-0 z-10 text-black rounded pt-12'>
+                    <ul className='list-none m-0 p-2 bg-white rounded-md border text-sm shadow-md'>
+                      <li onClick={() => { navigate('/history'); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>History</li>
+                      <li onClick={() => { logout(); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10'>Logout</li>
+                    </ul>
+                  </div>
+                </>
+              }
             </div>
 
           </div>
