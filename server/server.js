@@ -3,6 +3,7 @@ import cors from 'cors'
 import 'dotenv/config'
 import dns from 'node:dns'
 import connectDB from './config/mongodb.js'
+import connectCloudinary from './config/cloudinary.js'
 import userRouter from './routes/userRoutes.js'
 import imageRouter from './routes/imageRoutes.js'
 
@@ -16,6 +17,7 @@ app.use(express.json())
 app.use(cors())
 
 await connectDB()
+await connectCloudinary()
 app.use('/api/user', userRouter)
 app.use('/api/image', imageRouter)
 app.get('/', (req, res) => res.send("API Working"))

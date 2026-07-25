@@ -55,6 +55,25 @@ const AppContextProvider = (props) => {
     }
   };
 
+  const getUserImages = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/api/image/history", {
+        headers: { token },
+      });
+
+      if (data.success) {
+        return data.images;
+      } else {
+        toast.error(data.message);
+        return [];
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      return [];
+    }
+};
+
   const initPay = async (order) => {
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,

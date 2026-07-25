@@ -1,6 +1,21 @@
 import userModel from "../models/userModel.js"
+import imageModel from "../models/imageModel.js"
 import FormData from 'form-data'
 import axios from 'axios'
+import { v2 as cloudinary } from 'cloudinary'
+
+const uploadToCloudinary = (buffer) => {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+            { resource_type: 'image', folder: 'imaginocraft' },
+            (error, result) => {
+                if (error) reject(error)
+                else resolve(result)
+            }
+        )
+        uploadStream.end(buffer)
+    })
+}
 
 export const generateImage = async (req, res) => {
     try {
@@ -27,8 +42,15 @@ export const generateImage = async (req, res) => {
             responseType: 'arraybuffer'
         })
 
-        const base64Image = Buffer.from(data, 'binary').toString('base64')
-        const resultImage = `data:image/png;base64,${base64Image}`
+        const imageBuffer = Buffer.from(data, 'binary')
+
+        const uploadResult = await uploadToCloudinary(imageBuffer)
+
+        await imageModel.create({
+            userId,
+            prompt,
+            imageUrl: uploadResult.secure_url
+        })
 
         await userModel.findByIdAndUpdate(user._id, { creditBalance: user.creditBalance - 1 })
 
@@ -36,8 +58,22 @@ export const generateImage = async (req, res) => {
             success: true,
             message: "Image Generated",
             creditBalance: user.creditBalance - 1,
-            resultImage
+            resultImage: uploadResult.secure_url
         })
+
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+export const getUserImages = async (req, res) => {
+    try {
+        const { userId } = req.body
+
+        const images = await imageModel.find({ userId }).sort({ createdAt: -1 })
+
+        res.json({ success: true, images })
 
     } catch (error) {
         console.log(error.message)
