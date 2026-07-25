@@ -73,7 +73,27 @@ const AppContextProvider = (props) => {
       return [];
     }
 };
+const deleteImage = async (imageId) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/image/delete",
+        { imageId },
+        { headers: { token } }
+      );
 
+      if (data.success) {
+        toast.success(data.message);
+        return true;
+      } else {
+        toast.error(data.message);
+        return false;
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      return false;
+    }
+};
   const initPay = async (order) => {
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -159,9 +179,10 @@ const AppContextProvider = (props) => {
     logout,
     generateImage,
     paymentRazorpay,
+    getUserImages,
     navigate,
-  };
-
+    deleteImage,
+};
   return (
     <AppContext.Provider value={value}>
       {props.children}

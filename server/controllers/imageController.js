@@ -80,3 +80,27 @@ export const getUserImages = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+
+export const deleteImage = async (req, res) => {
+    try {
+        const { userId, imageId } = req.body
+
+        const image = await imageModel.findById(imageId)
+
+        if (!image) {
+            return res.json({ success: false, message: 'Image not found' })
+        }
+
+        if (image.userId !== userId) {
+            return res.json({ success: false, message: 'Not Authorized' })
+        }
+
+        await imageModel.findByIdAndDelete(imageId)
+
+        res.json({ success: true, message: 'Image Deleted' })
+
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: error.message })
+    }
+}
