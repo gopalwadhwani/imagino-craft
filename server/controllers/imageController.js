@@ -5,6 +5,8 @@ import axios from 'axios'
 import { v2 as cloudinary } from 'cloudinary'
 import fs from 'fs'
 import sharp from 'sharp'
+import { PDFDocument } from 'pdf-lib'
+
 
 const uploadToCloudinary = (buffer) => {
     return new Promise((resolve, reject) => {
@@ -186,6 +188,61 @@ export const compressImage = async (req, res) => {
             resultImage: uploadResult.secure_url,
             originalSize: req.file.size,
             compressedSize: compressedBuffer.length
+        })
+
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+export const imagesToPdf = async (req, res) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.json({ success: false, message: 'No images uploaded' })
+        }
+
+        const pdfDoc = await PDFDocument.create()
+
+        for (const file of req.files) {
+            const imageBytes = fs.readFileSync(file.path)
+
+            let image
+            if (file.mimetype === 'image/png') {
+                image = await pdfDoc.embedPng(imageBytes)
+            } else {
+                image = await pdfDoc.embedJpg(imageBytes)
+            }
+
+            const page = pdfDoc.addPage([image.width, image.height])
+            page.drawImage(image, {
+                x: 0,
+                y: 0,
+                width: image.width,
+                height: image.height
+            })
+
+            fs.unlinkSync(file.path)
+        }
+
+        const pdfBytes = await pdfDoc.save()
+        const pdfBuffer = Buffer.from(pdfBytes)
+
+        const uploadResult = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                { resource_type: 'raw', folder: 'imaginocraft-pdfs', format: 'pdf' },
+                (error, result) => {
+                    if (error) reject(error)
+                    else resolve(result)
+                }
+            )
+            uploadStream.end(pdfBuffer)
+        })
+
+        res.json({
+            success: true,
+            message: "PDF Created",
+            resultPdf: uploadResult.secure_url
         })
 
     } catch (error) {

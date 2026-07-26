@@ -149,6 +149,28 @@ const compressImage = async (imageFile, quality = 70) => {
     }
 };
 
+const imagesToPdf = async (imageFiles) => {
+    try {
+      const formData = new FormData()
+      imageFiles.forEach(file => formData.append('images', file))
+
+      const { data } = await axios.post(
+        backendUrl + "/api/image/to-pdf",
+        formData
+      );
+
+      if (data.success) {
+        return data.resultPdf;
+      } else {
+        toast.error(data.message);
+        return null;
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      return null;
+    }
+};
   const initPay = async (order) => {
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -239,6 +261,7 @@ const compressImage = async (imageFile, quality = 70) => {
     deleteImage,
     removeBg,
     compressImage,
+    imagesToPdf,
 };
   return (
     <AppContext.Provider value={value}>
