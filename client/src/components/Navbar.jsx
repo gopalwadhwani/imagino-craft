@@ -85,7 +85,12 @@ const Navbar = () => {
               <p className='text-xs sm:text-sm font-medium text-gray-600'>Credits: {credit}</p>
             </button>
 
-            <p className='text-gray-600 max-sm:hidden pl-4'>Hi, {user.name}</p>
+            <p
+              onClick={() => navigate('/profile')}
+              className='text-gray-600 max-sm:hidden pl-4 cursor-pointer hover:text-black transition-all'
+            >
+              Hi, {user.name}
+            </p>
 
             <div className='relative shrink-0' ref={menuRef}>
               <img
@@ -108,6 +113,7 @@ const Navbar = () => {
                       </li>
                     ))}
                     <li onClick={() => { navigate('/history'); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>History</li>
+                    <li onClick={() => { navigate('/profile'); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>Profile</li>
                     <li onClick={() => { logout(); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10'>Logout</li>
                   </ul>
                 </div>

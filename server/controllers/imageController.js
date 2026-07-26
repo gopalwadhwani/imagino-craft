@@ -6,6 +6,137 @@ import { v2 as cloudinary } from 'cloudinary'
 import fs from 'fs'
 import sharp from 'sharp'
 import { PDFDocument } from 'pdf-lib'
+import { GoogleGenAI, Modality } from '@google/genai'
+import editSessionModel from '../models/editSessionModel.js'
+
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+
+// Start a new editing session with an initial image
+export const startEditSession = async (req, res) => {
+    try {
+        const { userId } = req.body
+
+        const user = await userModel.findById(userId)
+        if (user.creditBalance <= 0) {
+            return res.json({ success: false, message: "No Credit Balance", creditBalance: user.creditBalance })
+        }
+
+        if (!req.file) {
+            return res.json({ success: false, message: 'No image uploaded' })
+        }
+
+        const imageBuffer = fs.readFileSync(req.file.path)
+        const uploadResult = await uploadToCloudinary(imageBuffer)
+        fs.unlinkSync(req.file.path)
+
+        const session = await editSessionModel.create({
+            userId,
+            messages: [
+                { role: 'model', imageUrl: uploadResult.secure_url }
+            ]
+        })
+
+        res.json({ success: true, sessionId: session._id, imageUrl: uploadResult.secure_url })
+
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// Send an edit instruction within an existing session
+export const sendEditMessage = async (req, res) => {
+    try {
+        const { userId, sessionId, instruction } = req.body
+
+        const user = await userModel.findById(userId)
+        if (user.creditBalance <= 0) {
+            return res.json({ success: false, message: "No Credit Balance", creditBalance: user.creditBalance })
+        }
+
+        const session = await editSessionModel.findById(sessionId)
+        if (!session || session.userId !== userId) {
+            return res.json({ success: false, message: 'Session not found' })
+        }
+
+        // Get the most recent image in the session to use as the base for this edit
+        const lastImageMessage = [...session.messages].reverse().find(m => m.imageUrl)
+        if (!lastImageMessage) {
+            return res.json({ success: false, message: 'No base image found in session' })
+        }
+
+        // Fetch that image and convert to base64 for Gemini
+        const imageResponse = await axios.get(lastImageMessage.imageUrl, { responseType: 'arraybuffer' })
+        const base64Image = Buffer.from(imageResponse.data, 'binary').toString('base64')
+
+        const geminiResponse = await genAI.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [
+                {
+                    role: 'user',
+                    parts: [
+                        { inlineData: { mimeType: 'image/png', data: base64Image } },
+                        { text: instruction }
+                    ]
+                }
+            ],
+            config: {
+                responseModalities: [Modality.TEXT, Modality.IMAGE]
+            }
+        })
+
+        let resultImageBase64 = null
+        let resultText = null
+
+        for (const part of geminiResponse.candidates[0].content.parts) {
+            if (part.text) resultText = part.text
+            else if (part.inlineData) resultImageBase64 = part.inlineData.data
+        }
+
+        if (!resultImageBase64) {
+            return res.json({ success: false, message: resultText || 'No image returned from Gemini' })
+        }
+
+        const imageBuffer = Buffer.from(resultImageBase64, 'base64')
+        const uploadResult = await uploadToCloudinary(imageBuffer)
+
+        session.messages.push({ role: 'user', text: instruction })
+        session.messages.push({ role: 'model', text: resultText, imageUrl: uploadResult.secure_url })
+        await session.save()
+
+        await userModel.findByIdAndUpdate(userId, { creditBalance: user.creditBalance - 1 })
+
+        res.json({
+            success: true,
+            imageUrl: uploadResult.secure_url,
+            text: resultText,
+            creditBalance: user.creditBalance - 1
+        })
+
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// Fetch a session (e.g. on page reload)
+export const getEditSession = async (req, res) => {
+    try {
+        const { userId } = req.body
+        const { sessionId } = req.params
+
+        const session = await editSessionModel.findById(sessionId)
+        if (!session || session.userId !== userId) {
+            return res.json({ success: false, message: 'Session not found' })
+        }
+
+        res.json({ success: true, session })
+
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: error.message })
+    }
+}
 
 
 const uploadToCloudinary = (buffer) => {

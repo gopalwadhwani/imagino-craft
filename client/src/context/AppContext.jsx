@@ -264,7 +264,101 @@ const imagesToPdf = async (imageFiles) => {
     }
 };
 
+const forgotPassword = async (email) => {
+    try {
+      const { data } = await axios.post(backendUrl + "/api/user/forgot-password", { email });
+      toast.success(data.message);
+      return data.success;
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      return false;
+    }
+};
 
+const resetPassword = async (token, password) => {
+    try {
+      const { data } = await axios.post(backendUrl + "/api/user/reset-password", { token, password });
+
+      if (data.success) {
+        toast.success(data.message);
+        return true;
+      } else {
+        toast.error(data.message);
+        return false;
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      return false;
+    }
+};
+const getUserProfile = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/api/user/profile", {
+        headers: { token },
+      });
+
+      if (data.success) {
+        return data;
+      } else {
+        toast.error(data.message);
+        return null;
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      return null;
+    }
+};
+const startEditSession = async (imageFile) => {
+    try {
+      const formData = new FormData()
+      formData.append('image', imageFile)
+
+      const { data } = await axios.post(
+        backendUrl + "/api/image/edit/start",
+        formData,
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        return data;
+      } else {
+        toast.error(data.message);
+        if (data.creditBalance === 0) navigate("/buy");
+        return null;
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      return null;
+    }
+};
+
+const sendEditMessage = async (sessionId, instruction) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/image/edit/message",
+        { sessionId, instruction },
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        loadCreditsData();
+        return data;
+      } else {
+        toast.error(data.message);
+        loadCreditsData();
+        if (data.creditBalance === 0) navigate("/buy");
+        return null;
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      return null;
+    }
+};
   const value = {
     user,
     setUser,
@@ -286,6 +380,11 @@ const imagesToPdf = async (imageFiles) => {
     compressImage,
     imagesToPdf,
     toggleFavorite,
+    forgotPassword,
+    resetPassword,
+    getUserProfile,
+    sendEditMessage,
+    startEditSession
 };
   return (
     <AppContext.Provider value={value}>

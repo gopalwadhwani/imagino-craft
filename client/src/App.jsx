@@ -9,6 +9,8 @@ import History from "./pages/History";
 import RemoveBackground from "./pages/RemoveBackground";
 import CompressImage from "./pages/CompressImage";
 import ImageToPdf from "./pages/ImageToPdf";
+import ResetPassword from "./pages/ResetPassword";
+import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
@@ -31,6 +33,8 @@ const App = () => {
         <Route path="/remove-bg" element={<RemoveBackground />} />
         <Route path="/compress" element={<CompressImage />} />
         <Route path="/to-pdf" element={<ImageToPdf />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       <Footer />
     </div>

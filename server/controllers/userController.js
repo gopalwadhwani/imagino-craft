@@ -3,6 +3,8 @@ import transactionModel from "../models/transactionModel.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import razorpay from 'razorpay'
+import crypto from 'crypto'
+import nodemailer from 'nodemailer'     
 
 const registerUser = async (req, res) => {
     try {
@@ -82,6 +84,13 @@ const userCredits = async (req, res) => {
 const razorpayInstance = new razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
+})
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
 })
 
 const paymentRazorpay = async (req, res) => {
@@ -184,5 +193,101 @@ const verifyRazorpay = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body
 
-export { registerUser, loginUser, userCredits, paymentRazorpay, verifyRazorpay };
+        const user = await userModel.findOne({ email })
+
+        if (!user) {
+            return res.json({ success: true, message: 'If that email exists, a reset link has been sent.' })
+        }
+
+        const resetToken = crypto.randomBytes(32).toString('hex')
+        const resetTokenExpiry = Date.now() + 15 * 60 * 1000
+
+        user.resetToken = resetToken
+        user.resetTokenExpiry = resetTokenExpiry
+        await user.save()
+
+        const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`
+
+        try {
+            await transporter.sendMail({
+                from: `"ImaginoCraft" <${process.env.EMAIL_USER}>`,
+                to: email,
+                subject: 'Reset your ImaginoCraft password',
+                html: `
+                    <p>Hi ${user.name},</p>
+                    <p>Click the link below to reset your password. This link expires in 15 minutes.</p>
+                    <p><a href="${resetUrl}">${resetUrl}</a></p>
+                    <p>If you didn't request this, you can safely ignore this email.</p>
+                `
+            })
+        } catch (emailError) {
+            console.log('Email send failed:', emailError.message)
+        }
+
+        res.json({ success: true, message: 'If that email exists, a reset link has been sent.' })
+
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+const resetPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body
+
+        const user = await userModel.findOne({
+            resetToken: token,
+            resetTokenExpiry: { $gt: Date.now() }
+        })
+
+        if (!user) {
+            return res.json({ success: false, message: 'Invalid or expired reset link' })
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password, salt)
+
+        user.password = hashedPassword
+        user.resetToken = null
+        user.resetTokenExpiry = null
+        await user.save()
+
+        res.json({ success: true, message: 'Password reset successful. You can now log in.' })
+
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: error.message })
+    }
+}
+const getUserProfile = async (req, res) => {
+    try {
+        const { userId } = req.body
+
+        const user = await userModel.findById(userId).select('-password -resetToken -resetTokenExpiry')
+
+        if (!user) {
+            return res.json({ success: false, message: 'User not found' })
+        }
+
+        const transactions = await transactionModel
+            .find({ userId, payment: true })
+            .sort({ date: -1 })
+
+        res.json({
+            success: true,
+            user,
+            transactions
+        })
+
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+export { registerUser, loginUser, userCredits, paymentRazorpay, verifyRazorpay, forgotPassword, resetPassword, getUserProfile };
