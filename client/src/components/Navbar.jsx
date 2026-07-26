@@ -42,6 +42,7 @@ const Navbar = () => {
         user ?
           <div className='flex items-center gap-2 sm:gap-3 shrink-0'>
 
+            <p onClick={() => navigate('/remove-bg')} className='cursor-pointer text-gray-600 hover:text-black transition-all max-sm:hidden'>Remove BG</p>
             <p onClick={() => navigate('/history')} className='cursor-pointer text-gray-600 hover:text-black transition-all max-sm:hidden'>History</p>
 
             <button onClick={() => navigate('/buy')} className='flex items-center gap-1 bg-blue-100 px-2 sm:px-6 py-1.5 sm:py-3 rounded-full hover:scale-105 transition-all duration-700 shrink-0'>
@@ -62,6 +63,7 @@ const Navbar = () => {
               {menuOpen &&
                 <div className='absolute top-0 right-0 z-20 text-black rounded pt-12'>
                   <ul className='list-none m-0 p-2 bg-white rounded-md border text-sm shadow-md'>
+                    <li onClick={() => { navigate('/remove-bg'); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>Remove BG</li>
                     <li onClick={() => { navigate('/history'); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>History</li>
                     <li onClick={() => { logout(); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10'>Logout</li>
                   </ul>
