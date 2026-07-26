@@ -359,6 +359,29 @@ const sendEditMessage = async (sessionId, instruction) => {
       return null;
     }
 };
+const startEditSessionFromPrompt = async (prompt) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/image/edit/start-from-prompt",
+        { prompt },
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        loadCreditsData();
+        return data;
+      } else {
+        toast.error(data.message);
+        loadCreditsData();
+        if (data.creditBalance === 0) navigate("/buy");
+        return null;
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      return null;
+    }
+};
   const value = {
     user,
     setUser,
@@ -384,7 +407,8 @@ const sendEditMessage = async (sessionId, instruction) => {
     resetPassword,
     getUserProfile,
     sendEditMessage,
-    startEditSession
+    startEditSession,
+    startEditSessionFromPrompt
 };
   return (
     <AppContext.Provider value={value}>

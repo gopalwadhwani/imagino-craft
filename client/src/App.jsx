@@ -15,6 +15,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
 import { AppContext } from "./context/AppContext";
+import ConversationalEdit from "./pages/ConversationalEdit";
 
 const App = () => {
   const { showLogin } = useContext(AppContext);
@@ -35,6 +36,7 @@ const App = () => {
         <Route path="/to-pdf" element={<ImageToPdf />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/edit" element={<ConversationalEdit />} />
       </Routes>
       <Footer />
     </div>

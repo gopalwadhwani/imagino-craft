@@ -37,6 +37,7 @@ const Navbar = () => {
   }, [menuOpen, toolsOpen])
 
   const toolLinks = [
+    { label: 'Generate Image', path: '/edit' },
     { label: 'Remove Background', path: '/remove-bg' },
     { label: 'Compress Image', path: '/compress' },
     { label: 'Image to PDF', path: '/to-pdf' },
