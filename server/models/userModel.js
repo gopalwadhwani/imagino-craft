@@ -5,6 +5,8 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     creditBalance: { type: Number, default: 5 },
+    resetToken: { type: String, default: null },
+    resetTokenExpiry: { type: Date, default: null },
 }, { timestamps: true })
 
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);

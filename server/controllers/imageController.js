@@ -250,3 +250,28 @@ export const imagesToPdf = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+
+export const toggleFavorite = async (req, res) => {
+    try {
+        const { userId, imageId } = req.body
+
+        const image = await imageModel.findById(imageId)
+
+        if (!image) {
+            return res.json({ success: false, message: 'Image not found' })
+        }
+
+        if (image.userId !== userId) {
+            return res.json({ success: false, message: 'Not Authorized' })
+        }
+
+        image.favorite = !image.favorite
+        await image.save()
+
+        res.json({ success: true, favorite: image.favorite })
+
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: error.message })
+    }
+}

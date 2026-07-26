@@ -242,6 +242,29 @@ const imagesToPdf = async (imageFiles) => {
     }
   }, [token]);
 
+
+  const toggleFavorite = async (imageId) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/image/favorite",
+        { imageId },
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        return data.favorite;
+      } else {
+        toast.error(data.message);
+        return null;
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      return null;
+    }
+};
+
+
   const value = {
     user,
     setUser,
@@ -262,6 +285,7 @@ const imagesToPdf = async (imageFiles) => {
     removeBg,
     compressImage,
     imagesToPdf,
+    toggleFavorite,
 };
   return (
     <AppContext.Provider value={value}>
