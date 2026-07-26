@@ -42,6 +42,7 @@ const Navbar = () => {
         user ?
           <div className='flex items-center gap-2 sm:gap-3 shrink-0'>
 
+            <p onClick={() => navigate('/compress')} className='cursor-pointer text-gray-600 hover:text-black transition-all max-sm:hidden'>Compress</p>
             <p onClick={() => navigate('/remove-bg')} className='cursor-pointer text-gray-600 hover:text-black transition-all max-sm:hidden'>Remove BG</p>
             <p onClick={() => navigate('/history')} className='cursor-pointer text-gray-600 hover:text-black transition-all max-sm:hidden'>History</p>
 
@@ -63,6 +64,7 @@ const Navbar = () => {
               {menuOpen &&
                 <div className='absolute top-0 right-0 z-20 text-black rounded pt-12'>
                   <ul className='list-none m-0 p-2 bg-white rounded-md border text-sm shadow-md'>
+                    <li onClick={() => { navigate('/compress'); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>Compress</li>
                     <li onClick={() => { navigate('/remove-bg'); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>Remove BG</li>
                     <li onClick={() => { navigate('/history'); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>History</li>
                     <li onClick={() => { logout(); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10'>Logout</li>

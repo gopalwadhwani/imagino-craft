@@ -3,11 +3,13 @@ import { Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
 import Home from "./pages/Home";
 import Result from "./pages/Result";
 import BuyCredit from "./pages/BuyCredit";
 import History from "./pages/History";
 import RemoveBackground from "./pages/RemoveBackground";
+import CompressImage from "./pages/CompressImage";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
@@ -28,6 +30,7 @@ const App = () => {
         <Route path="/buy" element={<BuyCredit />} />
         <Route path="/history" element={<History />} />
         <Route path="/remove-bg" element={<RemoveBackground />} />
+        <Route path="/compress" element={<CompressImage />} />
       </Routes>
       <Footer />
     </div>

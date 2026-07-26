@@ -1,5 +1,5 @@
 import express from 'express'
-import { generateImage, getUserImages, deleteImage, removeBackground } from '../controllers/imageController.js'
+import { generateImage, getUserImages, deleteImage, removeBackground, compressImage } from '../controllers/imageController.js'
 import userAuth from '../middlewares/auth.js'
 import upload from '../middlewares/multer.js'
 
