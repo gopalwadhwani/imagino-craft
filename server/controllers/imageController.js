@@ -4,6 +4,7 @@ import FormData from 'form-data'
 import axios from 'axios'
 import { v2 as cloudinary } from 'cloudinary'
 import fs from 'fs'
+import sharp from 'sharp'
 
 const uploadToCloudinary = (buffer) => {
     return new Promise((resolve, reject) => {
@@ -154,6 +155,37 @@ export const removeBackground = async (req, res) => {
             message: "Background Removed",
             creditBalance: user.creditBalance - 1,
             resultImage: uploadResult.secure_url
+        })
+
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+
+export const compressImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.json({ success: false, message: 'No image uploaded' })
+        }
+
+        const quality = parseInt(req.body.quality) || 70
+
+        const compressedBuffer = await sharp(req.file.path)
+            .jpeg({ quality })
+            .toBuffer()
+
+        const uploadResult = await uploadToCloudinary(compressedBuffer)
+
+        fs.unlinkSync(req.file.path)
+
+        res.json({
+            success: true,
+            message: "Image Compressed",
+            resultImage: uploadResult.secure_url,
+            originalSize: req.file.size,
+            compressedSize: compressedBuffer.length
         })
 
     } catch (error) {
