@@ -9,7 +9,7 @@ const Header = () => {
   const navigate = useNavigate()
   const onClickHandler = () => {
     if (user) {
-      navigate('/edit')
+      navigate('/result')
     } else {
       setShowLogin(true)
     }

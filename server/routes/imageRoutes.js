@@ -1,5 +1,5 @@
 import express from 'express'
-import { generateImage, getUserImages, deleteImage, removeBackground, compressImage , imagesToPdf, toggleFavorite, startEditSession, sendEditMessage, getEditSession} from '../controllers/imageController.js'
+import { generateImage, getUserImages, deleteImage, removeBackground, compressImage , imagesToPdf, toggleFavorite, startEditSession, sendEditMessage, getEditSession, startEditSessionFromPrompt} from '../controllers/imageController.js'
 import userAuth from '../middlewares/auth.js'
 import upload from '../middlewares/multer.js'
 
@@ -15,5 +15,6 @@ imageRouter.post('/favorite', userAuth, toggleFavorite)
 imageRouter.post('/edit/start', userAuth, upload.single('image'), startEditSession)
 imageRouter.post('/edit/message', userAuth, sendEditMessage)
 imageRouter.get('/edit/:sessionId', userAuth, getEditSession)
+imageRouter.post('/edit/start-from-prompt', userAuth, startEditSessionFromPrompt)
 
 export default imageRouter

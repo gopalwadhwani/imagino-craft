@@ -1,33 +1,16 @@
-import React, { useContext, useState, useRef } from 'react'
+import React, { useContext, useState } from 'react'
 import { AppContext } from '../context/AppContext'
 
 const ConversationalEdit = () => {
 
-  const { startEditSession, startEditSessionFromPrompt, sendEditMessage, navigate } = useContext(AppContext)
+  const { startEditSessionFromPrompt, sendEditMessage, navigate } = useContext(AppContext)
 
   const [sessionId, setSessionId] = useState(null)
-  const [messages, setMessages] = useState([]) // { role, text, imageUrl }
+  const [messages, setMessages] = useState([])
   const [currentImage, setCurrentImage] = useState(null)
   const [instruction, setInstruction] = useState('')
   const [startPrompt, setStartPrompt] = useState('')
-  const [startMode, setStartMode] = useState('text') // 'text' | 'upload'
   const [loading, setLoading] = useState(false)
-  const fileInputRef = useRef(null)
-
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-
-    setLoading(true)
-    const data = await startEditSession(file)
-    setLoading(false)
-
-    if (data) {
-      setSessionId(data.sessionId)
-      setCurrentImage(data.imageUrl)
-      setMessages([{ role: 'model', imageUrl: data.imageUrl }])
-    }
-  }
 
   const handleStartFromPrompt = async () => {
     if (!startPrompt.trim() || loading) return
@@ -70,7 +53,6 @@ const ConversationalEdit = () => {
     setCurrentImage(null)
     setInstruction('')
     setStartPrompt('')
-    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   const handleKeyDown = (e, onEnter) => {
@@ -96,58 +78,23 @@ const ConversationalEdit = () => {
 
       {!sessionId &&
         <div className='flex-1 flex flex-col items-center justify-center gap-4'>
-
-          <div className='flex gap-2 mb-2'>
+          <div className='flex w-full max-w-md bg-neutral-100 p-1.5 rounded-full'>
+            <input
+              value={startPrompt}
+              onChange={(e) => setStartPrompt(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, handleStartFromPrompt)}
+              disabled={loading}
+              placeholder='Describe what you want to generate...'
+              className='flex-1 bg-transparent outline-none text-sm px-4 min-w-0'
+            />
             <button
-              onClick={() => setStartMode('text')}
-              className={`px-4 py-1.5 rounded-full text-sm ${startMode === 'text' ? 'bg-zinc-900 text-white' : 'bg-gray-100 text-gray-600'}`}
+              onClick={handleStartFromPrompt}
+              disabled={loading || !startPrompt.trim()}
+              className={`bg-zinc-900 text-white px-6 py-2 rounded-full text-sm whitespace-nowrap ${loading || !startPrompt.trim() ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Start from text
-            </button>
-            <button
-              onClick={() => setStartMode('upload')}
-              className={`px-4 py-1.5 rounded-full text-sm ${startMode === 'upload' ? 'bg-zinc-900 text-white' : 'bg-gray-100 text-gray-600'}`}
-            >
-              Upload a photo
+              {loading ? 'Generating...' : 'Generate'}
             </button>
           </div>
-
-          {startMode === 'text' ?
-            <div className='flex w-full max-w-md bg-neutral-100 p-1.5 rounded-full'>
-              <input
-                value={startPrompt}
-                onChange={(e) => setStartPrompt(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, handleStartFromPrompt)}
-                disabled={loading}
-                placeholder='Describe what you want to generate...'
-                className='flex-1 bg-transparent outline-none text-sm px-4 min-w-0'
-              />
-              <button
-                onClick={handleStartFromPrompt}
-                disabled={loading || !startPrompt.trim()}
-                className={`bg-zinc-900 text-white px-6 py-2 rounded-full text-sm whitespace-nowrap ${loading || !startPrompt.trim() ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                {loading ? 'Generating...' : 'Generate'}
-              </button>
-            </div>
-            :
-            <label
-              htmlFor='edit-upload'
-              className='w-full max-w-sm h-64 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors text-gray-500'
-            >
-              <p className='text-sm'>{loading ? 'Uploading...' : 'Click to upload an image'}</p>
-              <p className='text-xs mt-1'>PNG, JPG, or WEBP</p>
-              <input
-                id='edit-upload'
-                ref={fileInputRef}
-                type='file'
-                accept='image/png, image/jpeg, image/webp'
-                onChange={handleFileChange}
-                disabled={loading}
-                className='hidden'
-              />
-            </label>
-          }
         </div>
       }
 

@@ -6,8 +6,14 @@ import { useNavigate } from 'react-router-dom'
 const tools = [
   {
     name: 'Generate Image',
-    desc: 'Describe anything, generate an image, then keep refining it with AI.',
+    desc: 'Describe anything and generate a unique AI image in seconds.',
     icon: '🎨',
+    path: '/result'
+  },
+  {
+    name: 'Edit with AI (Beta)',
+    desc: 'Refine a generated image with follow-up instructions.',
+    icon: '💬',
     path: '/edit'
   },
   {
@@ -55,7 +61,7 @@ const ToolsShowcase = () => {
         More than just text-to-image — a full toolkit for creating and editing images.
       </p>
 
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 max-w-5xl mx-auto'>
         {tools.map((tool) => (
           <div
             key={tool.path}

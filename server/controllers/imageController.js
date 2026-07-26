@@ -115,10 +115,14 @@ export const sendEditMessage = async (req, res) => {
 
     } catch (error) {
         console.log(error.message)
+
+        if (error.message?.includes('RESOURCE_EXHAUSTED') || error.message?.includes('quota')) {
+            return res.json({ success: false, message: 'AI service is busy right now — please wait a moment and try again.' })
+        }
+
         res.json({ success: false, message: error.message })
     }
 }
-
 // Fetch a session (e.g. on page reload)
 export const getEditSession = async (req, res) => {
     try {
@@ -405,4 +409,57 @@ export const toggleFavorite = async (req, res) => {
         console.log(error.message)
         res.json({ success: false, message: error.message })
     }
+}
+
+export const startEditSessionFromPrompt = async (req, res) => {
+    try {
+        const { userId, prompt } = req.body
+
+        const user = await userModel.findById(userId)
+
+        if (!user || !prompt) {
+            return res.json({ success: false, message: 'Missing Details' })
+        }
+
+        if (user.creditBalance <= 0) {
+            return res.json({ success: false, message: "No Credit Balance", creditBalance: user.creditBalance })
+        }
+
+        const formData = new FormData()
+        formData.append('prompt', prompt)
+
+        const { data } = await axios.post('https://clipdrop-api.co/text-to-image/v1', formData, {
+            headers: { 'x-api-key': process.env.CLIPDROP_API },
+            responseType: 'arraybuffer'
+        })
+
+        const imageBuffer = Buffer.from(data, 'binary')
+        const uploadResult = await uploadToCloudinary(imageBuffer)
+
+        const session = await editSessionModel.create({
+            userId,
+            messages: [
+                { role: 'user', text: prompt },
+                { role: 'model', imageUrl: uploadResult.secure_url }
+            ]
+        })
+
+        await userModel.findByIdAndUpdate(userId, { creditBalance: user.creditBalance - 1 })
+
+        res.json({
+            success: true,
+            sessionId: session._id,
+            imageUrl: uploadResult.secure_url,
+            creditBalance: user.creditBalance - 1
+        })
+
+    } catch (error) {
+    console.log(error.message)
+
+    if (error.message?.includes('RESOURCE_EXHAUSTED') || error.message?.includes('quota')) {
+        return res.json({ success: false, message: 'AI service is busy right now — please wait a moment and try again.' })
+    }
+
+    res.json({ success: false, message: error.message })
+}
 }
