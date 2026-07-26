@@ -94,6 +94,37 @@ const deleteImage = async (imageId) => {
       return false;
     }
 };
+
+const removeBg = async (imageFile) => {
+    try {
+      const formData = new FormData()
+      formData.append('image', imageFile)
+
+      const { data } = await axios.post(
+        backendUrl + "/api/image/remove-bg",
+        formData,
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        loadCreditsData();
+        return data.resultImage;
+      } else {
+        toast.error(data.message);
+        loadCreditsData();
+
+        if (data.creditBalance === 0) {
+          navigate("/buy");
+        }
+        return null;
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      return null;
+    }
+};
+
   const initPay = async (order) => {
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -182,6 +213,7 @@ const deleteImage = async (imageId) => {
     getUserImages,
     navigate,
     deleteImage,
+    removeBg,
 };
   return (
     <AppContext.Provider value={value}>

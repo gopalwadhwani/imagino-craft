@@ -3,6 +3,7 @@ import imageModel from "../models/imageModel.js"
 import FormData from 'form-data'
 import axios from 'axios'
 import { v2 as cloudinary } from 'cloudinary'
+import fs from 'fs'
 
 const uploadToCloudinary = (buffer) => {
     return new Promise((resolve, reject) => {
@@ -98,6 +99,62 @@ export const deleteImage = async (req, res) => {
         await imageModel.findByIdAndDelete(imageId)
 
         res.json({ success: true, message: 'Image Deleted' })
+
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+export const removeBackground = async (req, res) => {
+    try {
+        const { userId } = req.body
+
+        const user = await userModel.findById(userId)
+
+        if (!user) {
+            return res.json({ success: false, message: 'User not found' })
+        }
+
+        if (user.creditBalance === 0 || user.creditBalance < 0) {
+            return res.json({ success: false, message: "No Credit Balance", creditBalance: user.creditBalance })
+        }
+
+        if (!req.file) {
+            return res.json({ success: false, message: 'No image uploaded' })
+        }
+
+        const formData = new FormData()
+        formData.append('image_file', fs.createReadStream(req.file.path))
+
+        const { data } = await axios.post('https://clipdrop-api.co/remove-background/v1', formData, {
+            headers: {
+                'x-api-key': process.env.CLIPDROP_API,
+                ...formData.getHeaders()
+            },
+            responseType: 'arraybuffer'
+        })
+
+        const imageBuffer = Buffer.from(data, 'binary')
+
+        const uploadResult = await uploadToCloudinary(imageBuffer)
+
+        fs.unlinkSync(req.file.path)
+
+        await imageModel.create({
+            userId,
+            prompt: 'Background removed',
+            imageUrl: uploadResult.secure_url
+        })
+
+        await userModel.findByIdAndUpdate(user._id, { creditBalance: user.creditBalance - 1 })
+
+        res.json({
+            success: true,
+            message: "Background Removed",
+            creditBalance: user.creditBalance - 1,
+            resultImage: uploadResult.secure_url
+        })
 
     } catch (error) {
         console.log(error.message)
