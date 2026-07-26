@@ -125,6 +125,30 @@ const removeBg = async (imageFile) => {
     }
 };
 
+const compressImage = async (imageFile, quality = 70) => {
+    try {
+      const formData = new FormData()
+      formData.append('image', imageFile)
+      formData.append('quality', quality)
+
+      const { data } = await axios.post(
+        backendUrl + "/api/image/compress",
+        formData
+      );
+
+      if (data.success) {
+        return data;
+      } else {
+        toast.error(data.message);
+        return null;
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      return null;
+    }
+};
+
   const initPay = async (order) => {
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -214,6 +238,7 @@ const removeBg = async (imageFile) => {
     navigate,
     deleteImage,
     removeBg,
+    compressImage,
 };
   return (
     <AppContext.Provider value={value}>
