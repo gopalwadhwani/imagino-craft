@@ -9,7 +9,9 @@ const Navbar = () => {
 
   const { user, setShowLogin, logout, credit } = useContext(AppContext);
   const [menuOpen, setMenuOpen] = useState(false)
+  const [toolsOpen, setToolsOpen] = useState(false)
   const menuRef = useRef(null)
+  const toolsRef = useRef(null)
 
   const navigate = useNavigate()
 
@@ -18,9 +20,12 @@ const Navbar = () => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setMenuOpen(false)
       }
+      if (toolsRef.current && !toolsRef.current.contains(e.target)) {
+        setToolsOpen(false)
+      }
     }
 
-    if (menuOpen) {
+    if (menuOpen || toolsOpen) {
       document.addEventListener('mousedown', handleClickOutside)
       document.addEventListener('touchstart', handleClickOutside)
     }
@@ -29,7 +34,13 @@ const Navbar = () => {
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('touchstart', handleClickOutside)
     }
-  }, [menuOpen])
+  }, [menuOpen, toolsOpen])
+
+  const toolLinks = [
+    { label: 'Remove Background', path: '/remove-bg' },
+    { label: 'Compress Image', path: '/compress' },
+    { label: 'Image to PDF', path: '/to-pdf' },
+  ]
 
   return (
     <div className='flex items-center justify-between gap-2 py-4 px-4'>
@@ -42,8 +53,31 @@ const Navbar = () => {
         user ?
           <div className='flex items-center gap-2 sm:gap-3 shrink-0'>
 
-            <p onClick={() => navigate('/compress')} className='cursor-pointer text-gray-600 hover:text-black transition-all max-sm:hidden'>Compress</p>
-            <p onClick={() => navigate('/remove-bg')} className='cursor-pointer text-gray-600 hover:text-black transition-all max-sm:hidden'>Remove BG</p>
+            <div className='relative max-sm:hidden' ref={toolsRef}>
+              <p
+                onClick={() => setToolsOpen(prev => !prev)}
+                className='cursor-pointer text-gray-600 hover:text-black transition-all flex items-center gap-1'
+              >
+                Tools <span className='text-xs'>▾</span>
+              </p>
+
+              {toolsOpen &&
+                <div className='absolute top-0 right-0 z-20 text-black rounded pt-8'>
+                  <ul className='list-none m-0 p-2 bg-white rounded-md border text-sm shadow-md whitespace-nowrap'>
+                    {toolLinks.map(tool => (
+                      <li
+                        key={tool.path}
+                        onClick={() => { navigate(tool.path); setToolsOpen(false) }}
+                        className='py-1.5 px-3 cursor-pointer hover:bg-gray-50 rounded'
+                      >
+                        {tool.label}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              }
+            </div>
+
             <p onClick={() => navigate('/history')} className='cursor-pointer text-gray-600 hover:text-black transition-all max-sm:hidden'>History</p>
 
             <button onClick={() => navigate('/buy')} className='flex items-center gap-1 bg-blue-100 px-2 sm:px-6 py-1.5 sm:py-3 rounded-full hover:scale-105 transition-all duration-700 shrink-0'>
@@ -63,12 +97,19 @@ const Navbar = () => {
 
               {menuOpen &&
                 <div className='absolute top-0 right-0 z-20 text-black rounded pt-12'>
-                  <ul className='list-none m-0 p-2 bg-white rounded-md border text-sm shadow-md'>
-  <li onClick={() => { navigate('/compress'); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>Compress</li>
-  <li onClick={() => { navigate('/remove-bg'); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>Remove BG</li>
-  <li onClick={() => { navigate('/history'); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>History</li>
-  <li onClick={() => { logout(); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10'>Logout</li>
-</ul>
+                  <ul className='list-none m-0 p-2 bg-white rounded-md border text-sm shadow-md whitespace-nowrap'>
+                    {toolLinks.map(tool => (
+                      <li
+                        key={tool.path}
+                        onClick={() => { navigate(tool.path); setMenuOpen(false) }}
+                        className='py-1 px-2 cursor-pointer pr-10 sm:hidden'
+                      >
+                        {tool.label}
+                      </li>
+                    ))}
+                    <li onClick={() => { navigate('/history'); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10 sm:hidden'>History</li>
+                    <li onClick={() => { logout(); setMenuOpen(false) }} className='py-1 px-2 cursor-pointer pr-10'>Logout</li>
+                  </ul>
                 </div>
               }
             </div>
