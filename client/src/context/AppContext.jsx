@@ -12,8 +12,9 @@ const AppContextProvider = (props) => {
   const [credit, setCredit] = useState(false);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
-  console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY_ID)
   const navigate = useNavigate();
+
+  const getErrorMessage = (error) => error.response?.data?.message || error.message;
 
   const loadCreditsData = async () => {
     try {
@@ -51,7 +52,7 @@ const AppContextProvider = (props) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
     }
   };
 
@@ -69,11 +70,12 @@ const AppContextProvider = (props) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
       return [];
     }
-};
-const deleteImage = async (imageId) => {
+  };
+
+  const deleteImage = async (imageId) => {
     try {
       const { data } = await axios.post(
         backendUrl + "/api/image/delete",
@@ -90,12 +92,12 @@ const deleteImage = async (imageId) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
       return false;
     }
-};
+  };
 
-const removeBg = async (imageFile) => {
+  const removeBg = async (imageFile) => {
     try {
       const formData = new FormData()
       formData.append('image', imageFile)
@@ -120,12 +122,12 @@ const removeBg = async (imageFile) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
       return null;
     }
-};
+  };
 
-const compressImage = async (imageFile, quality = 70) => {
+  const compressImage = async (imageFile, quality = 70) => {
     try {
       const formData = new FormData()
       formData.append('image', imageFile)
@@ -144,12 +146,12 @@ const compressImage = async (imageFile, quality = 70) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
       return null;
     }
-};
+  };
 
-const imagesToPdf = async (imageFiles) => {
+  const imagesToPdf = async (imageFiles) => {
     try {
       const formData = new FormData()
       imageFiles.forEach(file => formData.append('images', file))
@@ -167,10 +169,11 @@ const imagesToPdf = async (imageFiles) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
       return null;
     }
-};
+  };
+
   const initPay = async (order) => {
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -197,7 +200,7 @@ const imagesToPdf = async (imageFiles) => {
           }
         } catch (error) {
           console.log(error);
-          toast.error(error.message);
+          toast.error(getErrorMessage(error));
         }
       },
     };
@@ -226,7 +229,7 @@ const imagesToPdf = async (imageFiles) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
     }
   };
 
@@ -259,24 +262,24 @@ const imagesToPdf = async (imageFiles) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
       return null;
     }
-};
+  };
 
-const forgotPassword = async (email) => {
+  const forgotPassword = async (email) => {
     try {
       const { data } = await axios.post(backendUrl + "/api/user/forgot-password", { email });
       toast.success(data.message);
       return data.success;
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
       return false;
     }
-};
+  };
 
-const resetPassword = async (token, password) => {
+  const resetPassword = async (token, password) => {
     try {
       const { data } = await axios.post(backendUrl + "/api/user/reset-password", { token, password });
 
@@ -289,11 +292,12 @@ const resetPassword = async (token, password) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
       return false;
     }
-};
-const getUserProfile = async () => {
+  };
+
+  const getUserProfile = async () => {
     try {
       const { data } = await axios.get(backendUrl + "/api/user/profile", {
         headers: { token },
@@ -307,11 +311,12 @@ const getUserProfile = async () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
       return null;
     }
-};
-const startEditSession = async (imageFile) => {
+  };
+
+  const startEditSession = async (imageFile) => {
     try {
       const formData = new FormData()
       formData.append('image', imageFile)
@@ -331,12 +336,12 @@ const startEditSession = async (imageFile) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
       return null;
     }
-};
+  };
 
-const sendEditMessage = async (sessionId, instruction) => {
+  const sendEditMessage = async (sessionId, instruction) => {
     try {
       const { data } = await axios.post(
         backendUrl + "/api/image/edit/message",
@@ -355,11 +360,12 @@ const sendEditMessage = async (sessionId, instruction) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
       return null;
     }
-};
-const startEditSessionFromPrompt = async (prompt) => {
+  };
+
+  const startEditSessionFromPrompt = async (prompt) => {
     try {
       const { data } = await axios.post(
         backendUrl + "/api/image/edit/start-from-prompt",
@@ -378,10 +384,11 @@ const startEditSessionFromPrompt = async (prompt) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(getErrorMessage(error));
       return null;
     }
-};
+  };
+
   const value = {
     user,
     setUser,
@@ -409,7 +416,8 @@ const startEditSessionFromPrompt = async (prompt) => {
     sendEditMessage,
     startEditSession,
     startEditSessionFromPrompt
-};
+  };
+
   return (
     <AppContext.Provider value={value}>
       {props.children}

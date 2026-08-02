@@ -6,6 +6,7 @@ import connectDB from './config/mongodb.js'
 import connectCloudinary from './config/cloudinary.js'
 import userRouter from './routes/userRoutes.js'
 import imageRouter from './routes/imageRoutes.js'
+import { generalLimiter } from './middlewares/rateLimiter.js'
 
 // Use Google Public DNS to resolve MongoDB Atlas SRV records
 dns.setServers(['8.8.8.8', '8.8.4.4'])
@@ -15,6 +16,7 @@ const app = express()
 
 app.use(express.json())
 app.use(cors())
+app.use(generalLimiter)
 
 await connectDB()
 await connectCloudinary()
