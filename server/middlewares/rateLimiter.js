@@ -12,7 +12,7 @@ export const generalLimiter = rateLimit({
 // Stricter limiter for expensive AI/image operations
 export const aiToolLimiter = rateLimit({
     windowMs: 60 * 1000, // 1 minute
-    max: 1, // 5 requests per minute per IP
+    max: 5, // 5 requests per minute per IP
     message: { success: false, message: 'You are sending requests too quickly. Please slow down.' },
     standardHeaders: true,
     legacyHeaders: false,
