@@ -9,11 +9,19 @@ export const handleValidationErrors = (req, res, next) => {
     next()
 }
 
+const strongPasswordRules = body('password')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+    .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter')
+    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
+    .matches(/[0-9]/).withMessage('Password must contain at least one number')
+    .not().matches(/^(.)\1+$/).withMessage('Password cannot be all the same character')
+    .not().matches(/^(0123456789|1234567890|123456789|password|qwerty)/i).withMessage('Password is too common or predictable')
+
 export const validateRegister = [
     body('name').trim().notEmpty().withMessage('Name is required')
         .isLength({ max: 50 }).withMessage('Name must be under 50 characters'),
     body('email').trim().isEmail().withMessage('Please enter a valid email').normalizeEmail(),
-    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+    strongPasswordRules,
     handleValidationErrors
 ]
 
@@ -30,7 +38,7 @@ export const validateForgotPassword = [
 
 export const validateResetPassword = [
     body('token').notEmpty().withMessage('Reset token is required'),
-    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+    strongPasswordRules,
     handleValidationErrors
 ]
 
