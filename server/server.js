@@ -13,12 +13,25 @@ dns.setServers(['8.8.8.8', '8.8.4.4'])
 
 const PORT = process.env.PORT || 4000
 const app = express()
-
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173'
+];
 app.use(express.json())
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true
-}))
+  origin: function (origin, callback) {
+    // Allow requests with no origin (Postman, mobile apps, curl)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+}));
 app.use(generalLimiter)
 
 await connectDB()
